@@ -1,0 +1,24 @@
+{
+  "itemGroup.mekltgt": "通用机械: 闪电发电机",
+  "item.mekltgt.super_alloy": "§1超导合金",
+  "item.mekltgt.super_core": "§b超导核心",
+  "block.mekltgt.super_probe": "§b超导探头",
+  "block.mekltgt.lightning_generator": "§b闪电发电机",
+  "container.mekltgt.lightning_generator": "闪电发电机",
+  "description.mekltgt.lightning_generator": "§b利用超导探针接受闪电的巨大能量产生电力，仅能从底部输出能量",
+  "gui.mekltgt.lightning_generator.probe_missing": "§4没有侦测到超导探针或有方块遮挡",
+  "gui.mekltgt.lightning_generator.stored": "存储: %s",
+  "gui.mekltgt.lightning_generator.stored_full": "存储: %s / %s",
+  "gui.mekltgt.lightning_generator.avg_production": "输出: %s/t",
+  "item.mekltgt.lightning_absorption_unit": "§e闪电吸收单元",
+  "module.mekltgt.lightning_absorption_unit": "§e闪电吸收单元",
+  "description.mekltgt.lightning_absorption_unit": "被闪电击中时免疫伤害并充能头盔。若胸甲安装能量分配单元，则充能全部护甲。",
+
+  "mekltgt.configuration.title": "Mek闪电科技配置",
+  "mekltgt.configuration.section.mekltgt.common.toml": "Mek闪电科技设置",
+  "mekltgt.configuration.section.mekltgt.common.toml.title": "Mek闪电科技通用配置",
+  "mekltgt.configuration.items": "已注册物品列表",
+  "mekltgt.configuration.logDirtBlock": "输出泥土方块信息",
+  "mekltgt.configuration.magicNumberIntroduction": "魔法数字前缀",
+  "mekltgt.configuration.magicNumber": "魔法数字数值"
+}

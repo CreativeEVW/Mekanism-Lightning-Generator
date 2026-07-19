@@ -1,0 +1,44 @@
+# This is a neoforge.mods.toml file.
+
+modLoader="javafml"
+loaderVersion="[4,)"
+
+license="MIT"
+
+[[mods]]
+modId="mekltgt"
+version="1.2.0"
+displayName="Mekanism:Lightning Generator"
+logoFile="logo.png"
+
+description='''
+Adds the Lightning Generator as a high-tier power generation device for Mekanism.
+'''
+
+[[dependencies.mekltgt]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.233,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.mekltgt]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.22)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.mekltgt]]
+modId="mekanism"
+type="required"
+versionRange="[10.6.0,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.mekltgt]]
+modId="mekanismgenerators"
+type="required"
+versionRange="[10.6.0,)"
+ordering="NONE"
+side="BOTH"

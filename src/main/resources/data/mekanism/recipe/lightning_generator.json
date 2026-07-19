@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": { "item": "mekanism:ingot_steel" },
+    "B": { "item": "mekltgt:super_alloy" },
+    "C": { "item": "mekltgt:super_core" }
+  },
+  "pattern": [
+    "ABA",
+    "ACA",
+    "ABA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "mekltgt:lightning_generator"
+  }
+}

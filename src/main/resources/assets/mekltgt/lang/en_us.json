@@ -1,0 +1,24 @@
+{
+  "itemGroup.mekltgt": "Mekanism:Lightning Generator",
+  "item.mekltgt.super_alloy": "§1Superconducting Alloy",
+  "item.mekltgt.super_core": "§bSuperconducting Core",
+  "block.mekltgt.super_probe": "§bSuperconducting Probe",
+  "block.mekltgt.lightning_generator": "§bLightning Generator",
+  "container.mekltgt.lightning_generator": "Lightning Generator",
+  "description.mekltgt.lightning_generator": "§bGenerates power from lightning strikes. Only outputs energy from the bottom.",
+  "gui.mekltgt.lightning_generator.probe_missing": "No Super Probe detected or blocked",
+  "gui.mekltgt.lightning_generator.stored": "Stored: %s",
+  "gui.mekltgt.lightning_generator.stored_full": "Stored: %s / %s",
+  "gui.mekltgt.lightning_generator.avg_production": "Output: %s/t",
+  "item.mekltgt.lightning_absorption_unit": "§eLightning Absorption Unit",
+  "module.mekltgt.lightning_absorption_unit": "§eLightning Absorption Unit",
+  "description.mekltgt.lightning_absorption_unit": "When struck by lightning, nullifies damage and recharges helmet. If chestplate has Charge Distribution Unit, recharges all armor pieces.",
+
+  "mekltgt.configuration.title": "Mek Lightning Tech Configurations",
+  "mekltgt.configuration.section.mekltgt.common.toml": "Mek Lightning Tech Settings",
+  "mekltgt.configuration.section.mekltgt.common.toml.title": "Mek Lightning Tech General Config",
+  "mekltgt.configuration.items": "Registered Item List",
+  "mekltgt.configuration.logDirtBlock": "Log Dirt Block Info",
+  "mekltgt.configuration.magicNumberIntroduction": "Magic Number Prefix",
+  "mekltgt.configuration.magicNumber": "Magic Number Value"
+}

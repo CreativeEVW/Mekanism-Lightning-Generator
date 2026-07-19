@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ASA",
+    "SMS",
+    "ALA"
+  ],
+  "key": {
+    "A": { "item": "mekltgt:super_alloy" },
+    "S": { "item": "mekltgt:super_probe" },
+    "M": { "item": "mekanism:module_base" },
+    "L": { "item": "mekltgt:lightning_generator" }
+  },
+  "result": {
+    "id": "mekltgt:lightning_absorption_unit",
+    "count": 1
+  }
+}

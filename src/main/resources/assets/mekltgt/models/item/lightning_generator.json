@@ -1,0 +1,9 @@
+{
+  "parent": "mekltgt:block/lightning_generator",
+  "display": {
+    "gui": {
+      "rotation": [30, 45, 0],
+      "scale": [0.5, 0.5, 0.5]
+    }
+  }
+}

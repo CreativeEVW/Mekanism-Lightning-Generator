@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {"item": "mekltgt:super_alloy"},
+    "T": {"item": "mekanism:ingot_steel"}
+  },
+  "pattern": [
+    "TST",
+    "TST",
+    "TST"
+  ],
+  "result": {
+    "id": "mekltgt:super_probe",
+    "count": 1
+  }
+}
