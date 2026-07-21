@@ -1,5 +1,6 @@
 package com.mekltgt.blockentity;
 
+import com.mekltgt.config.MekltgtConfig;
 import com.mekltgt.registries.ExtraRegistration;
 import mekanism.api.Action;
 import mekanism.api.AutomationType;
@@ -206,7 +207,11 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
         long currentMax = getCurrentMaxEnergy();
         if (energy < currentMax) {
             long gained = currentMax - energy;
-            energy = currentMax;
+            long maxCharge = MekltgtConfig.LIGHTNING_MAX_CHARGE.get();
+            if (maxCharge > 0 && gained > maxCharge) {
+                gained = maxCharge;
+            }
+            energy += gained;
             totalEnergyProduced += gained;
             setChanged();
         } else {

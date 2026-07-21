@@ -3,6 +3,7 @@ package com.mekltgt;
 import com.mekltgt.block.LightningGeneratorBlock;
 import com.mekltgt.block.SuperProbeBlock;
 import com.mekltgt.blockentity.LightningGeneratorBlockEntity;
+import com.mekltgt.config.MekltgtConfig;
 import com.mekltgt.gui.LightningGeneratorScreen;
 import com.mekltgt.item.LightningGeneratorItem;
 import com.mekltgt.item.SuperAlloyItem;
@@ -22,6 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -64,6 +66,8 @@ public class Mekltgt {
                     }).build());
 
     public Mekltgt(IEventBus modEventBus, ModContainer modContainer) {
+        modContainer.registerConfig(ModConfig.Type.COMMON, MekltgtConfig.SPEC, "Mekltgt.toml");
+
         BlockRegistryObject<LightningGeneratorBlock, LightningGeneratorItem> lgBlockRO = new BlockRegistryObject<>(LIGHTNING_GENERATOR_BLOCK, LIGHTNING_GENERATOR_ITEM);
         ExtraRegistration.initLightningGenerator(lgBlockRO);
 
