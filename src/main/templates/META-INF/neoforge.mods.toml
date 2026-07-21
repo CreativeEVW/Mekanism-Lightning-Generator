@@ -7,7 +7,7 @@ license="MIT"
 
 [[mods]]
 modId="mekltgt"
-version="1.2.0"
+version="1.2.1"
 displayName="Mekanism:Lightning Generator"
 logoFile="logo.png"
 
