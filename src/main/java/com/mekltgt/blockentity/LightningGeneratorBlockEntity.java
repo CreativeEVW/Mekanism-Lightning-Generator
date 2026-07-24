@@ -54,6 +54,8 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
         return upgradeComponent != null ? upgradeComponent.getUpgrades(Upgrade.ENERGY) : 0;
     }
 
+    private long syncedMaxEnergy = MAX_ENERGY;
+
     public long getCurrentMaxEnergy() {
         return MAX_ENERGY << getEnergyUpgradeCount();
     }
@@ -236,6 +238,7 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
         super.addContainerTrackers(container);
         container.track(SyncableBoolean.create(this::isProbeValid, value -> probeValid = value));
         container.track(SyncableLong.create(this::getAverageProduction, value -> averageProduction = value));
+        container.track(SyncableLong.create(this::getCurrentMaxEnergy, value -> syncedMaxEnergy = value));
     }
 
     public static class LightningUpgradeData implements IUpgradeData {

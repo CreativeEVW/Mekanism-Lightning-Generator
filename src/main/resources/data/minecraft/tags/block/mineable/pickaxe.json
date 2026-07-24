@@ -1,6 +1,7 @@
 {
   "values": [
     "mekltgt:super_probe",
-    "mekltgt:lightning_generator"
+    "mekltgt:lightning_generator",
+    "mekltgt:rocket_launch_platform"
   ]
 }
