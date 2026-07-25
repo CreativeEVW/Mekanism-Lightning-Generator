@@ -3,15 +3,18 @@ package com.mekltgt.registries;
 import com.mekltgt.Mekltgt;
 import com.mekltgt.block.DryIceBlock;
 import com.mekltgt.block.LightningGeneratorBlock;
+import com.mekltgt.block.OverloadProbeBlock;
 import com.mekltgt.block.RocketLaunchPlatformBlock;
 import com.mekltgt.block.SuperProbeBlock;
 import com.mekltgt.blockentity.DryIceBlockEntity;
 import com.mekltgt.blockentity.LightningGeneratorBlockEntity;
+import com.mekltgt.blockentity.OverloadProbeBlockEntity;
 import com.mekltgt.blockentity.RocketLaunchPlatformBlockEntity;
 import com.mekltgt.blockentity.SuperProbeBlockEntity;
 import com.mekltgt.gear.ModuleLightningAbsorptionUnit;
 import com.mekltgt.item.DryIceItem;
 import com.mekltgt.item.LightningGeneratorItem;
+import com.mekltgt.item.OverloadProbeItem;
 import com.mekltgt.item.RocketLaunchPlatformItem;
 import com.mekltgt.item.SuperProbeItem;
 import mekanism.api.chemical.Chemical;
@@ -78,6 +81,11 @@ public class ExtraRegistration {
     public static BlockRegistryObject<DryIceBlock, DryIceItem> DRY_ICE;
     public static TileEntityTypeRegistryObject<DryIceBlockEntity> DRY_ICE_BE;
     public static BlockTypeTile<DryIceBlockEntity> DRY_ICE_TYPE;
+
+    // Overload Probe (ae2lt cross-mod)
+    public static BlockRegistryObject<OverloadProbeBlock, OverloadProbeItem> OVERLOAD_PROBE;
+    public static TileEntityTypeRegistryObject<OverloadProbeBlockEntity> OVERLOAD_PROBE_BE;
+    public static BlockTypeTile<OverloadProbeBlockEntity> OVERLOAD_PROBE_TYPE;
 
     // Super Probe
     public static BlockRegistryObject<SuperProbeBlock, SuperProbeItem> SUPER_PROBE;
@@ -169,6 +177,24 @@ public class ExtraRegistration {
                 .with(AttributeUpgradeSupport.ENERGY_ONLY)
                 .with(new AttributeEnergy(() -> 0L, () -> LightningGeneratorBlockEntity.MAX_ENERGY))
                 .withComputerSupport("lightningGenerator")
+                .build();
+    }
+
+    private static final ILangEntry OP_DESCRIPTION = new ILangEntry() {
+        @Override
+        public String getTranslationKey() {
+            return Util.makeDescriptionId("description", ResourceLocation.fromNamespaceAndPath(Mekltgt.MODID, "overload_probe"));
+        }
+    };
+
+    public static void initOverloadProbe(BlockRegistryObject<OverloadProbeBlock, OverloadProbeItem> blockRO) {
+        OVERLOAD_PROBE = blockRO;
+
+        OVERLOAD_PROBE_TYPE = new BlockTypeTile<>(() -> OVERLOAD_PROBE_BE, OP_DESCRIPTION);
+
+        OVERLOAD_PROBE_BE = TILE_ENTITY_TYPES.mekBuilder(OVERLOAD_PROBE,
+                        (pos, state) -> new OverloadProbeBlockEntity(pos, state))
+                .withSimple(Capabilities.CONFIG_CARD)
                 .build();
     }
 

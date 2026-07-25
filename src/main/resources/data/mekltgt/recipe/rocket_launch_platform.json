@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "S S",
+    "S S",
+    "AEA"
+  ],
+  "key": {
+    "S": { "item": "mekanism:ingot_steel" },
+    "A": { "item": "mekltgt:super_alloy" },
+    "E": { "item": "mekanism:advanced_energy_cube" }
+  },
+  "result": {
+    "count": 1,
+    "id": "mekltgt:rocket_launch_platform"
+  }
+}

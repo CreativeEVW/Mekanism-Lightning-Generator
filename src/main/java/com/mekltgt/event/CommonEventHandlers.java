@@ -2,6 +2,7 @@ package com.mekltgt.event;
 
 import com.mekltgt.Mekltgt;
 import com.mekltgt.blockentity.LightningGeneratorBlockEntity;
+import com.mekltgt.compat.Ae2ltCompat;
 import com.mekltgt.registries.ExtraRegistration;
 import mekanism.api.Action;
 import mekanism.api.energy.IStrictEnergyHandler;
@@ -45,6 +46,13 @@ public class CommonEventHandlers {
             }
         }
 
+        // 过载探头 + AE2LT 闪电收集器联动
+        if (level.getBlockState(boltPos).getBlock() == Mekltgt.OVERLOAD_PROBE_BLOCK.get()
+                && Ae2ltCompat.tryCapture(level, boltPos)) {
+            bolt.discard();
+            return;
+        }
+
         // 闪电发电机（向上扩展2格）
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 3; y++) {
@@ -82,7 +90,7 @@ public class CommonEventHandlers {
         }
     }
 
-    /** 搜索范围内最近的超导探针 */
+    /** 搜索范围内最近的探针（超导探针或过载探针） */
     private static BlockPos findNearestProbe(Level level, BlockPos center) {
         BlockPos nearest = null;
         double nearestDistSq = Double.MAX_VALUE;
@@ -91,7 +99,8 @@ public class CommonEventHandlers {
             for (int dy = -PROBE_ATTRACT_RANGE; dy <= PROBE_ATTRACT_RANGE; dy++) {
                 for (int dz = -PROBE_ATTRACT_RANGE; dz <= PROBE_ATTRACT_RANGE; dz++) {
                     BlockPos pos = center.offset(dx, dy, dz);
-                    if (level.getBlockState(pos).getBlock() == Mekltgt.SUPER_PROBE.get()) {
+                    var block = level.getBlockState(pos).getBlock();
+                    if (block == Mekltgt.SUPER_PROBE.get() || block == Mekltgt.OVERLOAD_PROBE_BLOCK.get()) {
                         double distSq = center.distSqr(pos);
                         if (distSq < nearestDistSq) {
                             nearestDistSq = distSq;

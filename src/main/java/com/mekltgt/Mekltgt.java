@@ -2,6 +2,7 @@ package com.mekltgt;
 
 import com.mekltgt.block.DryIceBlock;
 import com.mekltgt.block.LightningGeneratorBlock;
+import com.mekltgt.block.OverloadProbeBlock;
 import com.mekltgt.block.RocketLaunchPlatformBlock;
 import com.mekltgt.block.SuperProbeBlock;
 import com.mekltgt.blockentity.LightningGeneratorBlockEntity;
@@ -10,12 +11,14 @@ import com.mekltgt.gui.LightningGeneratorScreen;
 import com.mekltgt.gui.RocketLaunchPlatformScreen;
 import com.mekltgt.item.DryIceItem;
 import com.mekltgt.item.LightningGeneratorItem;
+import com.mekltgt.item.OverloadProbeItem;
 import com.mekltgt.item.RocketLaunchPlatformItem;
 import com.mekltgt.item.SuperAlloyItem;
 import com.mekltgt.item.SuperCoreItem;
 import com.mekltgt.item.SuperProbeItem;
 import com.mekltgt.item.ThunderstormRocketItem;
 import com.mekltgt.registries.ExtraRegistration;
+import net.neoforged.fml.ModList;
 import mekanism.common.registration.impl.BlockRegistryObject;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -65,6 +68,10 @@ public class Mekltgt {
     public static final DeferredItem<RocketLaunchPlatformItem> ROCKET_LAUNCH_PLATFORM_ITEM = ITEMS.register("rocket_launch_platform",
             () -> new RocketLaunchPlatformItem(ROCKET_LAUNCH_PLATFORM_BLOCK.get()));
 
+    public static final DeferredBlock<OverloadProbeBlock> OVERLOAD_PROBE_BLOCK = BLOCKS.register("overload_probe", OverloadProbeBlock::new);
+    public static final DeferredItem<OverloadProbeItem> OVERLOAD_PROBE_ITEM = ITEMS.register("overload_probe",
+            () -> new OverloadProbeItem(OVERLOAD_PROBE_BLOCK.get()));
+
     public static final DeferredBlock<DryIceBlock> DRY_ICE_BLOCK = BLOCKS.register("dry_ice", DryIceBlock::new);
     public static final DeferredItem<DryIceItem> DRY_ICE_ITEM = ITEMS.register("dry_ice",
             () -> new DryIceItem(DRY_ICE_BLOCK.get()));
@@ -90,6 +97,7 @@ public class Mekltgt {
                         output.accept(DRY_ICE_ITEM.get());
                         output.accept(THUNDERSTORM_ROCKET.get());
                         output.accept(ROCKET_LAUNCH_PLATFORM_ITEM.get());
+                        output.accept(OVERLOAD_PROBE_ITEM.get());
                     }).build());
 
     public Mekltgt(IEventBus modEventBus, ModContainer modContainer) {
@@ -97,6 +105,9 @@ public class Mekltgt {
 
         BlockRegistryObject<LightningGeneratorBlock, LightningGeneratorItem> lgBlockRO = new BlockRegistryObject<>(LIGHTNING_GENERATOR_BLOCK, LIGHTNING_GENERATOR_ITEM);
         ExtraRegistration.initLightningGenerator(lgBlockRO);
+
+        BlockRegistryObject<OverloadProbeBlock, OverloadProbeItem> opBlockRO = new BlockRegistryObject<>(OVERLOAD_PROBE_BLOCK, OVERLOAD_PROBE_ITEM);
+        ExtraRegistration.initOverloadProbe(opBlockRO);
 
         BlockRegistryObject<SuperProbeBlock, SuperProbeItem> spBlockRO = new BlockRegistryObject<>(SUPER_PROBE, SUPER_PROBE_ITEM);
         ExtraRegistration.initSuperProbe(spBlockRO);

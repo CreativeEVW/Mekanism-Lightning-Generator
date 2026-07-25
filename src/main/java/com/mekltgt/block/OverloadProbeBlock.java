@@ -1,7 +1,7 @@
 package com.mekltgt.block;
 
 import com.mekltgt.Mekltgt;
-import com.mekltgt.blockentity.SuperProbeBlockEntity;
+import com.mekltgt.blockentity.OverloadProbeBlockEntity;
 import com.mekltgt.registries.ExtraRegistration;
 import mekanism.api.text.ILangEntry;
 import mekanism.common.block.interfaces.IHasDescription;
@@ -10,7 +10,6 @@ import mekanism.common.content.blocktype.BlockTypeTile;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -19,18 +18,13 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
-public class SuperProbeBlock extends BlockTile.BlockTileModel<SuperProbeBlockEntity, BlockTypeTile<SuperProbeBlockEntity>> implements IHasDescription {
-
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+public class OverloadProbeBlock extends BlockTile.BlockTileModel<OverloadProbeBlockEntity, BlockTypeTile<OverloadProbeBlockEntity>> implements IHasDescription {
 
     private static final VoxelShape BASE = Block.box(5, 0, 5, 11, 3, 11);
     private static final VoxelShape PILLAR = Block.box(7, 3, 7, 9, 11, 9);
@@ -39,29 +33,28 @@ public class SuperProbeBlock extends BlockTile.BlockTileModel<SuperProbeBlockEnt
     private static final VoxelShape RING3 = Block.box(6, 8, 6, 10, 9, 10);
     private static final VoxelShape SHAPE = Shapes.or(BASE, PILLAR, RING1, RING2, RING3);
 
-    public SuperProbeBlock() {
-        super(ExtraRegistration.SUPER_PROBE_TYPE, Block.Properties.of()
+    public OverloadProbeBlock() {
+        super(ExtraRegistration.OVERLOAD_PROBE_TYPE, Block.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(3.0F)
                 .noOcclusion());
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.UP));
     }
 
     @NotNull
     @Override
-    public TileEntityTypeRegistryObject<SuperProbeBlockEntity> getTileType() {
-        return ExtraRegistration.SUPER_PROBE_BE;
+    public TileEntityTypeRegistryObject<OverloadProbeBlockEntity> getTileType() {
+        return ExtraRegistration.OVERLOAD_PROBE_BE;
     }
 
+    @NotNull
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
-        builder.add(FACING);
+    public ILangEntry getDescription() {
+        return () -> Util.makeDescriptionId("description", ResourceLocation.fromNamespaceAndPath(Mekltgt.MODID, "overload_probe"));
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, Direction.UP);
+        return this.defaultBlockState();
     }
 
     @NotNull
@@ -74,12 +67,6 @@ public class SuperProbeBlock extends BlockTile.BlockTileModel<SuperProbeBlockEnt
     @Override
     public VoxelShape getCollisionShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return SHAPE;
-    }
-
-    @NotNull
-    @Override
-    public ILangEntry getDescription() {
-        return () -> Util.makeDescriptionId("description", ResourceLocation.fromNamespaceAndPath(Mekltgt.MODID, "super_probe"));
     }
 
     @Override
