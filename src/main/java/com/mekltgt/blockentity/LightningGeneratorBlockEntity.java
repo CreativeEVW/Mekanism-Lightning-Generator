@@ -57,6 +57,9 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
     private long syncedMaxEnergy = MAX_ENERGY;
 
     public long getCurrentMaxEnergy() {
+        if (level != null && level.isClientSide) {
+            return syncedMaxEnergy;
+        }
         return MAX_ENERGY << getEnergyUpgradeCount();
     }
 

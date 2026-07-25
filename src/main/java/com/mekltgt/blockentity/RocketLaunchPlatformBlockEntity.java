@@ -12,6 +12,7 @@ import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
 import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
 import mekanism.common.inventory.container.MekanismContainer;
 import mekanism.common.inventory.container.sync.SyncableBoolean;
+import mekanism.common.inventory.container.sync.SyncableInt;
 import mekanism.common.inventory.slot.BasicInventorySlot;
 import mekanism.common.tile.base.TileEntityMekanism;
 import mekanism.api.Upgrade;
@@ -159,19 +160,24 @@ public class RocketLaunchPlatformBlockEntity extends TileEntityMekanism {
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.setWeatherParameters(0, 6000, true, true);
             }
-            launchDelay = 20;
+            launchDelay = 100; // 5秒最小发射间隔
         }
     }
 
     private void spawnLaunchParticles(ServerLevel level) {
-        double x = worldPosition.getX() + 0.5;
-        double z = worldPosition.getZ() + 0.5;
+        double cx = worldPosition.getX() + 0.5;
+        double cz = worldPosition.getZ() + 0.5;
         for (int y = worldPosition.getY() + 1; y <= worldPosition.getY() + 20; y++) {
+            double offsetX = level.random.nextDouble() * 0.5 - 0.25;
+            double offsetZ = level.random.nextDouble() * 0.5 - 0.25;
+            // 烟雾
             level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    x + level.random.nextDouble() * 0.5 - 0.25,
-                    y + level.random.nextDouble() * 0.5,
-                    z + level.random.nextDouble() * 0.5 - 0.25,
+                    cx + offsetX, y + level.random.nextDouble() * 0.5, cz + offsetZ,
                     1, 0, 0.05, 0, 0.02);
+            // 火焰（XZ范围减半）
+            level.sendParticles(ParticleTypes.FLAME,
+                    cx + offsetX * 0.5, y + level.random.nextDouble() * 0.5, cz + offsetZ * 0.5,
+                    1, 0, 0.02, 0, 0.01);
         }
     }
 
@@ -228,8 +234,8 @@ public class RocketLaunchPlatformBlockEntity extends TileEntityMekanism {
     public void addContainerTrackers(MekanismContainer container) {
         super.addContainerTrackers(container);
         container.track(SyncableBoolean.create(this::hasSkyAccess, value -> hasSkyAccess = value));
-        container.track(SyncableBoolean.create(this::isCoolingDown, value -> cooldownTicks = value ? COOLDOWN_TICKS : 0));
-        container.track(SyncableBoolean.create(this::isActive, value -> activeTicks = value ? ACTIVE_TICKS : 0));
+        container.track(SyncableInt.create(this::getCooldownTicks, value -> cooldownTicks = value));
+        container.track(SyncableInt.create(this::getActiveTicks, value -> activeTicks = value));
     }
 
     public BasicEnergyContainer getEnergyContainer() {

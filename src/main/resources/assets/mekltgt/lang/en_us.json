@@ -26,8 +26,8 @@
   "gui.mekltgt.rocket_launch_platform.ready": "Use Thunderstorm Rocket to toggle thunderstorm",
   "gui.mekltgt.rocket_launch_platform.ready_storm": "Insert Thunderstorm Rocket to generate lightning",
   "gui.mekltgt.rocket_launch_platform.obstructed": "Launch port obstructed",
-  "gui.mekltgt.rocket_launch_platform.active": "Thunderstorm active, cooling down (%ss)",
-  "gui.mekltgt.rocket_launch_platform.cooldown": "Cooling down (%ss)",
+  "gui.mekltgt.rocket_launch_platform.active": "Thunderstorm active, cooling down (%ds)",
+  "gui.mekltgt.rocket_launch_platform.cooldown": "Cooling down (%ds)",
 
   "mekltgt.configuration.title": "Mek Lightning Tech Configurations",
   "mekltgt.configuration.section.mekltgt.common.toml": "Mek Lightning Tech Settings",
