@@ -7,8 +7,8 @@ license="MIT"
 
 [[mods]]
 modId="mekltgt"
-version="1.3.3"
-displayName="Mekanism:Lightning Generator"
+version="1.4.0"
+displayName="通用机械：闪电发电机"
 logoFile="logo.png"
 
 description='''
