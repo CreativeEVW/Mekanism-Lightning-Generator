@@ -5,9 +5,11 @@ import com.mekltgt.registries.ExtraRegistration;
 import mekanism.api.Action;
 import mekanism.api.AutomationType;
 import mekanism.api.IContentsListener;
+import mekanism.api.RelativeSide;
 import mekanism.api.Upgrade;
 import mekanism.api.energy.IEnergyContainer;
-import mekanism.api.energy.IMekanismStrictEnergyHandler;
+import mekanism.common.integration.energy.BlockEnergyCapabilityCache;
+import mekanism.common.util.CableUtils;
 import mekanism.common.attachments.containers.ContainerType;
 import mekanism.common.capabilities.holder.energy.IEnergyContainerHolder;
 import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
@@ -24,11 +26,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -49,6 +52,9 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
 
     // 充电槽
     private BasicInventorySlot energySlot;
+
+    @org.jetbrains.annotations.Nullable
+    private List<BlockEnergyCapabilityCache> outputCaches;
 
     private int getEnergyUpgradeCount() {
         return upgradeComponent != null ? upgradeComponent.getUpgrades(Upgrade.ENERGY) : 0;
@@ -84,6 +90,15 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
 
         @Override public long insert(long amount, Action action, AutomationType automationType) {
             return amount; // 禁止输入
+        }
+
+        @Override public long extract(long amount, Action action, AutomationType automationType) {
+            long toExtract = Math.min(amount, energy);
+            if (toExtract > 0 && action.execute()) {
+                energy -= toExtract;
+                setChanged();
+            }
+            return toExtract;
         }
     };
 
@@ -172,16 +187,14 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
             chargeItem(energySlot.getStack());
         }
 
-        // 每tick自动向底部弹出能量
+        // 每tick主动向底部推送所有能量（使用CableUtils，兼容线缆和机器）
         if (level != null && !isRemote() && energyContainer.getEnergy() > 0) {
-            BlockEntity be = WorldUtils.getTileEntity(level, worldPosition.below());
-            if (be instanceof IMekanismStrictEnergyHandler handler) {
-                long toSend = energyContainer.getEnergy();
-                long remainder = handler.insertEnergy(toSend, Direction.UP, Action.EXECUTE);
-                long sent = toSend - remainder;
-                if (sent > 0) {
-                    energyContainer.extract(sent, Action.EXECUTE, AutomationType.INTERNAL);
-                }
+            if (outputCaches == null && level instanceof ServerLevel sl) {
+                outputCaches = new ArrayList<>(1);
+                outputCaches.add(BlockEnergyCapabilityCache.create(sl, worldPosition.below(), Direction.UP));
+            }
+            if (outputCaches != null) {
+                CableUtils.emit(outputCaches, energyContainer, Long.MAX_VALUE);
             }
         }
 
