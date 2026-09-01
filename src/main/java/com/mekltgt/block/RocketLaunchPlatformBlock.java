@@ -23,15 +23,30 @@ import org.jetbrains.annotations.NotNull;
 public class RocketLaunchPlatformBlock extends BlockTile.BlockTileModel<RocketLaunchPlatformBlockEntity, Generator<RocketLaunchPlatformBlockEntity>> implements IHasDescription {
 
     private static final VoxelShape SHAPE = Shapes.or(
-            Block.box(0, 0, 0, 16, 4, 16),    // 底座
-            Block.box(0, 4, 0, 2, 14, 2),      // 西北柱
-            Block.box(14, 4, 0, 16, 14, 2),     // 东北柱
-            Block.box(0, 4, 14, 2, 14, 16),     // 西南柱
-            Block.box(14, 4, 14, 16, 14, 16),   // 东南柱
-            Block.box(0, 14, 0, 16, 16, 2),     // 北梁
-            Block.box(0, 14, 14, 16, 16, 16),   // 南梁
-            Block.box(14, 14, 2, 16, 16, 14),   // 东梁
-            Block.box(0, 14, 2, 2, 16, 14)      // 西梁
+            // 底座
+            Block.box(0, 0, 0, 16, 4, 16),
+            // 四角立柱
+            Block.box(0, 4, 0, 2, 14, 2),
+            Block.box(14, 4, 0, 16, 14, 2),
+            Block.box(0, 4, 14, 2, 14, 16),
+            Block.box(14, 4, 14, 16, 14, 16),
+            // 顶部四梁
+            Block.box(0, 14, 0, 16, 16, 2),
+            Block.box(0, 14, 14, 16, 16, 16),
+            Block.box(14, 14, 2, 16, 16, 14),
+            Block.box(0, 14, 2, 2, 16, 14),
+            // 南侧细节板
+            Block.box(5, 6, 14, 11, 12, 16),
+            Block.box(7, 4, 14, 9, 6, 16),
+            // 北侧细节板
+            Block.box(5, 6, 0, 11, 12, 2),
+            Block.box(7, 4, 0, 9, 6, 2),
+            // 西侧细节板
+            Block.box(0, 4, 7, 2, 6, 9),
+            Block.box(0, 6, 5, 2, 12, 11),
+            // 东侧细节板
+            Block.box(14, 4, 7, 16, 6, 9),
+            Block.box(14, 6, 5, 16, 12, 11)
     );
 
     public RocketLaunchPlatformBlock() {
