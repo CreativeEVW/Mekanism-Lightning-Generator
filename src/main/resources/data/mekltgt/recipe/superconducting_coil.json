@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": { "item": "mekanism:block_bronze" },
+    "B": { "item": "mekltgt:super_alloy" },
+    "C": { "item": "mekltgt:super_core" }
+  },
+  "result": {
+    "count": 1,
+    "id": "mekltgt:superconducting_coil"
+  }
+}

@@ -1,21 +1,26 @@
 package com.mekltgt;
 
 import com.mekltgt.block.DryIceBlock;
+import com.mekltgt.block.LargeLightningGeneratorBlock;
 import com.mekltgt.block.LightningGeneratorBlock;
 import com.mekltgt.block.OverloadProbeBlock;
 import com.mekltgt.block.RocketLaunchPlatformBlock;
 import com.mekltgt.block.SuperProbeBlock;
 import com.mekltgt.blockentity.LightningGeneratorBlockEntity;
 import com.mekltgt.config.MekltgtConfig;
+import com.mekltgt.gui.LargeLightningGeneratorScreen;
 import com.mekltgt.gui.LightningGeneratorScreen;
 import com.mekltgt.gui.RocketLaunchPlatformScreen;
 import com.mekltgt.item.DryIceItem;
+import com.mekltgt.item.IonizationCoreItem;
+import com.mekltgt.item.LargeLightningGeneratorItem;
 import com.mekltgt.item.LightningGeneratorItem;
 import com.mekltgt.item.OverloadProbeItem;
 import com.mekltgt.item.RocketLaunchPlatformItem;
 import com.mekltgt.item.SuperAlloyItem;
 import com.mekltgt.item.SuperCoreItem;
 import com.mekltgt.item.SuperProbeItem;
+import com.mekltgt.item.SuperconductingCoilItem;
 import com.mekltgt.item.ThunderstormRocketItem;
 import com.mekltgt.registries.ExtraRegistration;
 import net.neoforged.fml.ModList;
@@ -26,7 +31,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import mekanism.client.ClientRegistration;
 import mekanism.client.ClientRegistrationUtil;
+import mekanism.client.model.baked.ExtensionBakedModel.TransformedBakedModel;
+import mekanism.client.render.lib.QuadTransformation;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -56,6 +64,8 @@ public class Mekltgt {
 
     public static final DeferredItem<Item> SUPER_ALLOY = ITEMS.register("super_alloy", SuperAlloyItem::new);
     public static final DeferredItem<Item> SUPER_CORE = ITEMS.register("super_core", SuperCoreItem::new);
+    public static final DeferredItem<SuperconductingCoilItem> SUPERCONDUCTING_COIL = ITEMS.register("superconducting_coil", SuperconductingCoilItem::new);
+    public static final DeferredItem<IonizationCoreItem> IONIZATION_CORE = ITEMS.register("ionization_core", IonizationCoreItem::new);
 
     public static final DeferredBlock<SuperProbeBlock> SUPER_PROBE = BLOCKS.register("super_probe", SuperProbeBlock::new);
     public static final DeferredItem<SuperProbeItem> SUPER_PROBE_ITEM = ITEMS.register("super_probe",
@@ -63,6 +73,9 @@ public class Mekltgt {
 
     public static final DeferredBlock<LightningGeneratorBlock> LIGHTNING_GENERATOR_BLOCK = BLOCKS.register("lightning_generator", LightningGeneratorBlock::new);
     public static final DeferredItem<LightningGeneratorItem> LIGHTNING_GENERATOR_ITEM = ITEMS.register("lightning_generator", () -> new LightningGeneratorItem(LIGHTNING_GENERATOR_BLOCK.get()));
+
+    public static final DeferredBlock<LargeLightningGeneratorBlock> LARGE_LIGHTNING_GENERATOR_BLOCK = BLOCKS.register("large_lightning_generator", LargeLightningGeneratorBlock::new);
+    public static final DeferredItem<LargeLightningGeneratorItem> LARGE_LIGHTNING_GENERATOR_ITEM = ITEMS.register("large_lightning_generator", () -> new LargeLightningGeneratorItem(LARGE_LIGHTNING_GENERATOR_BLOCK.get()));
 
     public static final DeferredBlock<RocketLaunchPlatformBlock> ROCKET_LAUNCH_PLATFORM_BLOCK = BLOCKS.register("rocket_launch_platform", RocketLaunchPlatformBlock::new);
     public static final DeferredItem<RocketLaunchPlatformItem> ROCKET_LAUNCH_PLATFORM_ITEM = ITEMS.register("rocket_launch_platform",
@@ -91,8 +104,11 @@ public class Mekltgt {
                     .displayItems((parameters, output) -> {
                         output.accept(SUPER_ALLOY.get());
                         output.accept(SUPER_CORE.get());
+                        output.accept(SUPERCONDUCTING_COIL.get());
+                        output.accept(IONIZATION_CORE.get());
                         output.accept(SUPER_PROBE_ITEM.get());
                         output.accept(LIGHTNING_GENERATOR_ITEM.get());
+                        output.accept(LARGE_LIGHTNING_GENERATOR_ITEM.get());
                         output.accept(LIGHTNING_ABSORPTION_ITEM.get());
                         output.accept(DRY_ICE_ITEM.get());
                         output.accept(THUNDERSTORM_ROCKET.get());
@@ -105,6 +121,9 @@ public class Mekltgt {
 
         BlockRegistryObject<LightningGeneratorBlock, LightningGeneratorItem> lgBlockRO = new BlockRegistryObject<>(LIGHTNING_GENERATOR_BLOCK, LIGHTNING_GENERATOR_ITEM);
         ExtraRegistration.initLightningGenerator(lgBlockRO);
+
+        BlockRegistryObject<LargeLightningGeneratorBlock, LargeLightningGeneratorItem> llgBlockRO = new BlockRegistryObject<>(LARGE_LIGHTNING_GENERATOR_BLOCK, LARGE_LIGHTNING_GENERATOR_ITEM);
+        ExtraRegistration.initLargeLightningGenerator(llgBlockRO);
 
         BlockRegistryObject<OverloadProbeBlock, OverloadProbeItem> opBlockRO = new BlockRegistryObject<>(OVERLOAD_PROBE_BLOCK, OVERLOAD_PROBE_ITEM);
         ExtraRegistration.initOverloadProbe(opBlockRO);
@@ -136,6 +155,10 @@ public class Mekltgt {
                     lgItem.attachAttachments(modEventBus);
                     lgItem.attachCapabilities(e);
 
+                    LargeLightningGeneratorItem llgItem = LARGE_LIGHTNING_GENERATOR_ITEM.get();
+                    llgItem.attachAttachments(modEventBus);
+                    llgItem.attachCapabilities(e);
+
                     RocketLaunchPlatformItem rlpItem = ROCKET_LAUNCH_PLATFORM_ITEM.get();
                     rlpItem.attachAttachments(modEventBus);
                     rlpItem.attachCapabilities(e);
@@ -152,11 +175,16 @@ public class Mekltgt {
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ExtraRegistration.LIGHTNING_GENERATOR_CONTAINER.get(), LightningGeneratorScreen::new);
+            event.register(ExtraRegistration.LARGE_LIGHTNING_GENERATOR_CONTAINER.get(), LargeLightningGeneratorScreen::new);
             event.register(ExtraRegistration.ROCKET_LAUNCH_PLATFORM_CONTAINER.get(), RocketLaunchPlatformScreen::new);
         }
 
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
+            // 大型闪电发电机模型渲染时上移 1 格，对齐底部对齐的 bounding
+            ClientRegistration.addCustomModel(ExtraRegistration.LARGE_LIGHTNING_GENERATOR,
+                    (orig, evt) -> new TransformedBakedModel<Void>(orig, QuadTransformation.translate(0, 1, 0)));
+
             event.enqueueWork(() -> {
                 // 设置液态二氧化碳流体为半透明渲染层
                 for (var fluid : ExtraRegistration.FLUIDS.getFluidEntries()) {

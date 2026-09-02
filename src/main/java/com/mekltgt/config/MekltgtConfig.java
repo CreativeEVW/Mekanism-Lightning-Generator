@@ -5,16 +5,16 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public class MekltgtConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.LongValue LIGHTNING_MAX_CHARGE;
+    public static final ModConfigSpec.LongValue SINGLE_STRIKE_MAX_ENERGY;
 
     public static final ModConfigSpec SPEC;
 
     static {
         BUILDER.comment("Mekanism Lightning Generator Configuration");
 
-        LIGHTNING_MAX_CHARGE = BUILDER
-                .comment("Maximum energy gained per lightning strike (FE). Set to 0 to disable the cap (generator fills to full capacity on each strike).")
-                .defineInRange("lightningMaxCharge", 0L, 0L, Long.MAX_VALUE);
+        SINGLE_STRIKE_MAX_ENERGY = BUILDER
+                .comment("单次最大产电量 (FE，游戏内单位)。默认 20,000,000 (20MFE)。")
+                .defineInRange("singleStrikeMaxEnergy", 20_000_000L, 1L, Long.MAX_VALUE);
 
         SPEC = BUILDER.build();
     }

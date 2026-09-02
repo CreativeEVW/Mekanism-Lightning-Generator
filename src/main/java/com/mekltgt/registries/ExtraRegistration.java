@@ -2,17 +2,20 @@ package com.mekltgt.registries;
 
 import com.mekltgt.Mekltgt;
 import com.mekltgt.block.DryIceBlock;
+import com.mekltgt.block.LargeLightningGeneratorBlock;
 import com.mekltgt.block.LightningGeneratorBlock;
 import com.mekltgt.block.OverloadProbeBlock;
 import com.mekltgt.block.RocketLaunchPlatformBlock;
 import com.mekltgt.block.SuperProbeBlock;
 import com.mekltgt.blockentity.DryIceBlockEntity;
+import com.mekltgt.blockentity.LargeLightningGeneratorBlockEntity;
 import com.mekltgt.blockentity.LightningGeneratorBlockEntity;
 import com.mekltgt.blockentity.OverloadProbeBlockEntity;
 import com.mekltgt.blockentity.RocketLaunchPlatformBlockEntity;
 import com.mekltgt.blockentity.SuperProbeBlockEntity;
 import com.mekltgt.gear.ModuleLightningAbsorptionUnit;
 import com.mekltgt.item.DryIceItem;
+import com.mekltgt.item.LargeLightningGeneratorItem;
 import com.mekltgt.item.LightningGeneratorItem;
 import com.mekltgt.item.OverloadProbeItem;
 import com.mekltgt.item.RocketLaunchPlatformItem;
@@ -20,6 +23,7 @@ import com.mekltgt.item.SuperProbeItem;
 import mekanism.api.chemical.Chemical;
 import mekanism.api.text.ILangEntry;
 import mekanism.common.block.attribute.AttributeEnergy;
+import mekanism.common.block.attribute.AttributeHasBounding;
 import mekanism.common.block.attribute.AttributeUpgradeSupport;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.content.blocktype.BlockTypeTile;
@@ -37,13 +41,17 @@ import mekanism.common.registration.impl.ModuleRegistryObject;
 import mekanism.common.registration.impl.TileEntityTypeDeferredRegister;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import mekanism.common.tile.base.TileEntityMekanism;
+import mekanism.common.util.VoxelShapeUtils;
 import mekanism.generators.common.content.blocktype.Generator;
 import mekanism.generators.common.content.blocktype.Generator.GeneratorBuilder;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid.Flowing;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid.Source;
@@ -70,6 +78,12 @@ public class ExtraRegistration {
     public static TileEntityTypeRegistryObject<LightningGeneratorBlockEntity> LIGHTNING_GENERATOR_BE;
     public static Generator<LightningGeneratorBlockEntity> LIGHTNING_GENERATOR_MACHINE;
     public static ContainerTypeRegistryObject<MekanismTileContainer<LightningGeneratorBlockEntity>> LIGHTNING_GENERATOR_CONTAINER;
+
+    // Large Lightning Generator
+    public static BlockRegistryObject<LargeLightningGeneratorBlock, LargeLightningGeneratorItem> LARGE_LIGHTNING_GENERATOR;
+    public static TileEntityTypeRegistryObject<LargeLightningGeneratorBlockEntity> LARGE_LIGHTNING_GENERATOR_BE;
+    public static Generator<LargeLightningGeneratorBlockEntity> LARGE_LIGHTNING_GENERATOR_MACHINE;
+    public static ContainerTypeRegistryObject<MekanismTileContainer<LargeLightningGeneratorBlockEntity>> LARGE_LIGHTNING_GENERATOR_CONTAINER;
 
     // Rocket Launch Platform
     public static BlockRegistryObject<RocketLaunchPlatformBlock, RocketLaunchPlatformItem> ROCKET_LAUNCH_PLATFORM;
@@ -102,6 +116,140 @@ public class ExtraRegistration {
             return Util.makeDescriptionId("description", ResourceLocation.fromNamespaceAndPath(Mekltgt.MODID, "lightning_generator"));
         }
     };
+
+    private static final ILangEntry LLG_DESCRIPTION = new ILangEntry() {
+        @Override
+        public String getTranslationKey() {
+            return Util.makeDescriptionId("description", ResourceLocation.fromNamespaceAndPath(Mekltgt.MODID, "large_lightning_generator"));
+        }
+    };
+
+    /** 3x3x3 多方块结构（主方块位于底部，模型渲染时上移 1 格对齐） */
+    private static final AttributeHasBounding THREE_BY_THREE_BY_THREE = new AttributeHasBounding(
+            new AttributeHasBounding.HandleBoundingBlock() {
+                @Override
+                public <DATA> boolean handle(net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos,
+                        net.minecraft.world.level.block.state.BlockState state, DATA data,
+                        AttributeHasBounding.TriBooleanFunction<net.minecraft.world.level.Level, net.minecraft.core.BlockPos, DATA> predicate) {
+                    net.minecraft.core.BlockPos.MutableBlockPos mutable = new net.minecraft.core.BlockPos.MutableBlockPos();
+                    for (int x = -1; x <= 1; x++) {
+                        for (int y = 0; y <= 2; y++) {
+                            for (int z = -1; z <= 1; z++) {
+                                if (x != 0 || y != 0 || z != 0) {
+                                    mutable.setWithOffset(pos, x, y, z);
+                                    if (!predicate.accept(level, mutable, data)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                }
+            });
+
+        /** 碰撞形状（贴合模型几何，基础朝向朝北） */
+    private static final VoxelShape LLG_BASE_SHAPE = Shapes.or(
+        Block.box(5, 6, 28, 11, 12, 31),
+        Block.box(4, 5, 31, 12, 13, 32),
+        Block.box(5, 21, 28, 11, 27, 31),
+        Block.box(4, 20, 31, 12, 28, 32),
+        Block.box(6, 18, 28, 10, 21, 30),
+        Block.box(11, 22, 28, 14, 26, 30),
+        Block.box(6, 27, 28, 10, 30, 30),
+        Block.box(2, 22, 28, 5, 26, 30),
+        Block.box(29, 4, -13, 31, 33, -11),
+        Block.box(29, 4, -9, 31, 33, -7),
+        Block.box(29, 4, -5, 31, 33, -3),
+        Block.box(29, 4, -1, 31, 33, 1),
+        Block.box(29, 4, 3, 31, 33, 5),
+        Block.box(29, 4, 7, 31, 33, 9),
+        Block.box(29, 4, 11, 31, 33, 13),
+        Block.box(29, 4, 15, 31, 33, 17),
+        Block.box(29, 4, 19, 31, 33, 21),
+        Block.box(29, 4, 23, 31, 33, 25),
+        Block.box(29, 4, 27, 31, 33, 29),
+        Block.box(-15, 4, -13, -13, 33, -11),
+        Block.box(-15, 4, -9, -13, 33, -7),
+        Block.box(-15, 4, -5, -13, 33, -3),
+        Block.box(-15, 4, -1, -13, 33, 1),
+        Block.box(-15, 4, 3, -13, 33, 5),
+        Block.box(-15, 4, 7, -13, 33, 9),
+        Block.box(-15, 4, 11, -13, 33, 13),
+        Block.box(-15, 4, 15, -13, 33, 17),
+        Block.box(-15, 4, 19, -13, 33, 21),
+        Block.box(-15, 4, 23, -13, 33, 25),
+        Block.box(-15, 4, 27, -13, 33, 29),
+        Block.box(-13, 4, -15, -11, 33, -13),
+        Block.box(-9, 4, -15, -7, 33, -13),
+        Block.box(27, 4, -15, 29, 33, -13),
+        Block.box(23, 4, -15, 25, 33, -13),
+        Block.box(-5, 4, -15, -3, 33, -13),
+        Block.box(-1, 4, -15, 1, 33, -13),
+        Block.box(3, 4, -15, 5, 33, -13),
+        Block.box(11, 4, -15, 13, 33, -13),
+        Block.box(15, 4, -15, 17, 33, -13),
+        Block.box(19, 4, -15, 21, 33, -13),
+        Block.box(7, 4, -15, 9, 33, -13),
+        Block.box(-13, 4, 29, -11, 33, 31),
+        Block.box(-9, 4, 29, -7, 33, 31),
+        Block.box(27, 4, 29, 29, 33, 31),
+        Block.box(23, 4, 29, 25, 33, 31),
+        Block.box(-5, 4, 29, -3, 33, 31),
+        Block.box(-1, 4, 29, 1, 33, 31),
+        Block.box(15, 4, 29, 17, 33, 31),
+        Block.box(19, 4, 29, 21, 33, 31),
+        Block.box(21, 37, -9, 25, 41, 25),
+        Block.box(-9, 37, -9, -5, 41, 25),
+        Block.box(-5, 37, 21, 21, 41, 25),
+        Block.box(-5, 37, -9, 21, 41, -5),
+        Block.box(15, 37, 1, 19, 43, 15),
+        Block.box(-3, 37, 1, 1, 43, 15),
+        Block.box(-3, 37, 15, 19, 43, 19),
+        Block.box(-3, 37, -3, 19, 43, 1),
+        Block.box(-4, 16, -16, 20, 31, -14),
+        Block.box(-13, 4, -13, 29, 34, 29),
+        Block.box(-16, 0, -16, 32, 4, 32),
+        Block.box(-16, 33, -16, 32, 37, 32),
+        Block.box(4, 20, 31, 12, 28, 32),
+        Block.box(4, 5, 31, 12, 13, 32),
+        Block.box(27, 37, 5, 32, 46, 12),
+        Block.box(-16, 37, 5, -11, 46, 12),
+        Block.box(5, 36, 6, 10, 48, 11),
+        Block.box(4, 37, 27, 11, 46, 32),
+        Block.box(4, 37, -16, 11, 46, -11)
+    );
+
+    private static final VoxelShape[] LLG_SHAPES = new VoxelShape[4];
+    static {
+        VoxelShapeUtils.setShape(LLG_BASE_SHAPE, LLG_SHAPES);
+    }
+
+    public static void initLargeLightningGenerator(BlockRegistryObject<LargeLightningGeneratorBlock, LargeLightningGeneratorItem> blockRO) {
+        LARGE_LIGHTNING_GENERATOR = blockRO;
+
+        LARGE_LIGHTNING_GENERATOR_BE = TILE_ENTITY_TYPES.mekBuilder(LARGE_LIGHTNING_GENERATOR,
+                        (pos, state) -> new LargeLightningGeneratorBlockEntity(pos, state))
+                .clientTicker(TileEntityMekanism::tickClient)
+                .serverTicker(TileEntityMekanism::tickServer)
+                .withSimple(Capabilities.CONFIG_CARD)
+                .build();
+
+        LARGE_LIGHTNING_GENERATOR_CONTAINER = CONTAINER_TYPES.custom("large_lightning_generator", LargeLightningGeneratorBlockEntity.class)
+                .armorSideBar(-20, 11, 0)
+                .build();
+
+        LARGE_LIGHTNING_GENERATOR_MACHINE = GeneratorBuilder
+                .createGenerator(() -> LARGE_LIGHTNING_GENERATOR_BE, LLG_DESCRIPTION)
+                .withGui(() -> LARGE_LIGHTNING_GENERATOR_CONTAINER)
+                .withEnergyConfig(() -> LargeLightningGeneratorBlockEntity.MAX_ENERGY)
+                .with(AttributeUpgradeSupport.ENERGY_ONLY)
+                .with(new AttributeEnergy(() -> 0L, () -> LargeLightningGeneratorBlockEntity.MAX_ENERGY))
+                .withCustomShape(LLG_SHAPES)
+                .with(THREE_BY_THREE_BY_THREE)
+                .withComputerSupport("largeLightningGenerator")
+                .build();
+    }
 
     private static final ILangEntry SP_DESCRIPTION = new ILangEntry() {
         @Override

@@ -3,6 +3,7 @@
     "mekltgt:super_probe",
     "mekltgt:overload_probe",
     "mekltgt:lightning_generator",
+    "mekltgt:large_lightning_generator",
     "mekltgt:rocket_launch_platform"
   ]
 }

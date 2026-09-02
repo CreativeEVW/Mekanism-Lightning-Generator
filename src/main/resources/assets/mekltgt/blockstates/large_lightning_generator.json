@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,active=false": { "model": "mekltgt:block/large_lightning_generator" },
+    "facing=east,active=false":  { "model": "mekltgt:block/large_lightning_generator", "y": 90 },
+    "facing=south,active=false": { "model": "mekltgt:block/large_lightning_generator", "y": 180 },
+    "facing=west,active=false":  { "model": "mekltgt:block/large_lightning_generator", "y": 270 },
+    "facing=north,active=true":  { "model": "mekltgt:block/large_lightning_generator_on" },
+    "facing=east,active=true":   { "model": "mekltgt:block/large_lightning_generator_on", "y": 90 },
+    "facing=south,active=true":  { "model": "mekltgt:block/large_lightning_generator_on", "y": 180 },
+    "facing=west,active=true":   { "model": "mekltgt:block/large_lightning_generator_on", "y": 270 }
+  }
+}

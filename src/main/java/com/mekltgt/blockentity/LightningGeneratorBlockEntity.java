@@ -224,11 +224,8 @@ public class LightningGeneratorBlockEntity extends TileEntityMekanism {
 
         long currentMax = getCurrentMaxEnergy();
         if (energy < currentMax) {
-            long gained = currentMax - energy;
-            long maxCharge = MekltgtConfig.LIGHTNING_MAX_CHARGE.get();
-            if (maxCharge > 0 && gained > maxCharge) {
-                gained = maxCharge;
-            }
+            long singleMax = mekanism.common.util.MekanismUtils.convertToJoules(MekltgtConfig.SINGLE_STRIKE_MAX_ENERGY.get());
+            long gained = Math.min(currentMax - energy, singleMax);
             energy += gained;
             totalEnergyProduced += gained;
             setChanged();

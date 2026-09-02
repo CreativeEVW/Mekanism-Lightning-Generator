@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ABA",
+    "DCD",
+    "FEF"
+  ],
+  "key": {
+    "A": { "item": "mekltgt:super_probe" },
+    "B": { "item": "mekltgt:superconducting_coil" },
+    "C": { "item": "mekanism:ultimate_fluid_tank" },
+    "D": { "item": "mekanism:block_bronze" },
+    "E": { "item": "mekanism:pellet_antimatter" },
+    "F": { "item": "mekanism:block_steel" }
+  },
+  "result": {
+    "count": 1,
+    "id": "mekltgt:large_lightning_generator"
+  }
+}
