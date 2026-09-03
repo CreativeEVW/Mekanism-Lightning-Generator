@@ -242,9 +242,9 @@ public class ExtraRegistration {
         LARGE_LIGHTNING_GENERATOR_MACHINE = GeneratorBuilder
                 .createGenerator(() -> LARGE_LIGHTNING_GENERATOR_BE, LLG_DESCRIPTION)
                 .withGui(() -> LARGE_LIGHTNING_GENERATOR_CONTAINER)
-                .withEnergyConfig(() -> LargeLightningGeneratorBlockEntity.MAX_ENERGY)
+                .withEnergyConfig(() -> LargeLightningGeneratorBlockEntity.getMaxEnergy())
                 .with(AttributeUpgradeSupport.ENERGY_ONLY)
-                .with(new AttributeEnergy(() -> 0L, () -> LargeLightningGeneratorBlockEntity.MAX_ENERGY))
+                .with(new AttributeEnergy(() -> 0L, () -> LargeLightningGeneratorBlockEntity.getMaxEnergy()))
                 .withCustomShape(LLG_SHAPES)
                 .with(THREE_BY_THREE_BY_THREE)
                 .withComputerSupport("largeLightningGenerator")

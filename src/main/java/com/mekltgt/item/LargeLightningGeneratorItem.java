@@ -20,7 +20,7 @@ public class LargeLightningGeneratorItem extends ItemBlockTooltip<LargeLightning
     public void attachAttachments(IEventBus eventBus) {
         super.attachAttachments(eventBus);
         ContainerType.FLUID.addDefaultCreators(eventBus, this, () -> FluidTanksBuilder.builder()
-                .addBasic(LargeLightningGeneratorBlockEntity.MAX_FLUID,
+                .addBasic(LargeLightningGeneratorBlockEntity.getMaxFluid(),
                         fluid -> fluid.getFluid() == ExtraRegistration.LIQUID_CARBON_DIOXIDE.get())
                 .build(), MekanismConfig.storage);
     }

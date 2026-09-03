@@ -1,6 +1,7 @@
 package com.mekltgt.blockentity;
 
 import com.mekltgt.Mekltgt;
+import com.mekltgt.config.MekltgtConfig;
 import com.mekltgt.registries.ExtraRegistration;
 import mekanism.api.Action;
 import mekanism.api.AutomationType;
@@ -8,7 +9,6 @@ import mekanism.api.IContentsListener;
 import mekanism.api.RelativeSide;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.capabilities.energy.BasicEnergyContainer;
-import mekanism.common.capabilities.energy.MachineEnergyContainer;
 import mekanism.common.capabilities.fluid.BasicFluidTank;
 import mekanism.common.capabilities.fluid.VariableCapacityFluidTank;
 import mekanism.common.capabilities.holder.energy.EnergyContainerHelper;
@@ -49,9 +49,17 @@ import java.util.Objects;
  */
 public class LargeLightningGeneratorBlockEntity extends TileEntityMekanism implements IBoundingBlock {
 
-    public static final int MAX_FLUID = 100_000;              // 100B 流体容量
-    public static final long MAX_ENERGY = 52_500_000_000L;    // 21 GFE 电力存储（21G FE × 2.5 = 52.5G J）
-    private static final long PER_LIGHTNING = 1_000_000_000L; // 400 MFE 每闪电（400M FE × 2.5 = 1G J）
+    public static final int BASE_MAX_FLUID = 100_000;              // 100B 流体容量
+    public static final long BASE_MAX_ENERGY = 52_500_000_000L;    // 21 GFE 电力存储（21G FE × 2.5 = 52.5G J）
+    private static final long PER_LIGHTNING = 1_000_000_000L;      // 400 MFE 每闪电（400M FE × 2.5 = 1G J）
+
+    public static int getMaxFluid() {
+        return BASE_MAX_FLUID * MekltgtConfig.LARGE_GENERATOR_FLUID_MULTIPLIER.get();
+    }
+
+    public static long getMaxEnergy() {
+        return BASE_MAX_ENERGY * MekltgtConfig.LARGE_GENERATOR_ENERGY_MULTIPLIER.get();
+    }
 
     private BasicFluidTank co2Tank;
     private BasicEnergyContainer energyContainer;
@@ -70,8 +78,7 @@ public class LargeLightningGeneratorBlockEntity extends TileEntityMekanism imple
     @Override
     protected IEnergyContainerHolder getInitialEnergyContainers(IContentsListener listener) {
         EnergyContainerHelper builder = EnergyContainerHelper.forSide(facingSupplier);
-        builder.addContainer(energyContainer = BasicEnergyContainer.output(
-                MachineEnergyContainer.validateBlock(this).getStorage(), listener), RelativeSide.BACK);
+        builder.addContainer(energyContainer = new LargeLightningGeneratorEnergyContainer(this, listener), RelativeSide.BACK);
         return builder.build();
     }
 
@@ -79,7 +86,7 @@ public class LargeLightningGeneratorBlockEntity extends TileEntityMekanism imple
     @Override
     protected IFluidTankHolder getInitialFluidTanks(IContentsListener listener) {
         FluidTankHelper builder = FluidTankHelper.forSide(facingSupplier);
-        builder.addTank(co2Tank = VariableCapacityFluidTank.input(MAX_FLUID,
+        builder.addTank(co2Tank = VariableCapacityFluidTank.input(getMaxFluid(),
                 fluid -> fluid.getFluid() == ExtraRegistration.LIQUID_CARBON_DIOXIDE.get(), listener), RelativeSide.BACK);
         return builder.build();
     }
@@ -116,11 +123,13 @@ public class LargeLightningGeneratorBlockEntity extends TileEntityMekanism imple
         if (working) {
             int lightningCount = countLightning();
             if (lightningCount > 0) {
-                double co2Ratio = (double) co2Tank.getFluidAmount() / MAX_FLUID; // 0.0 到 1.0
-                long production = (long) (lightningCount * PER_LIGHTNING * co2Ratio);
+                double powerMultiplier = MekltgtConfig.LARGE_GENERATOR_POWER_MULTIPLIER.get() / 1000.0;
+                double co2Multiplier = MekltgtConfig.LARGE_GENERATOR_CO2_MULTIPLIER.get() / 10.0;
+                double co2Ratio = (double) co2Tank.getFluidAmount() / getMaxFluid(); // 0.0 到 1.0
+                long production = (long) (lightningCount * PER_LIGHTNING * co2Ratio * powerMultiplier);
                 if (production > 0) {
-                    // 消耗二氧化碳：按产电比例消耗（每 400MFE 消耗 1B 二氧化碳）
-                    int consume = (int) Math.max(1, production / PER_LIGHTNING * 1000);
+                    // 消耗二氧化碳：每闪电按 CO2 比例消耗 1000mB，再乘消耗倍率
+                    int consume = (int) Math.max(1, lightningCount * 1000 * co2Ratio * co2Multiplier);
                     co2Tank.extract(consume, Action.EXECUTE, AutomationType.INTERNAL);
                     energyContainer.insert(production, Action.EXECUTE, AutomationType.INTERNAL);
                     producingEnergy = production;
