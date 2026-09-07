@@ -5,6 +5,7 @@ import com.mekltgt.blockentity.LargeLightningGeneratorBlockEntity;
 import com.mekltgt.registries.ExtraRegistration;
 import mekanism.common.attachments.containers.ContainerType;
 import mekanism.common.attachments.containers.fluid.FluidTanksBuilder;
+import mekanism.common.attachments.containers.item.ItemSlotsBuilder;
 import mekanism.common.config.MekanismConfig;
 import mekanism.common.item.block.ItemBlockTooltip;
 import net.minecraft.world.item.Item;
@@ -23,5 +24,9 @@ public class LargeLightningGeneratorItem extends ItemBlockTooltip<LargeLightning
                 .addBasic(LargeLightningGeneratorBlockEntity.getMaxFluid(),
                         fluid -> fluid.getFluid() == ExtraRegistration.LIQUID_CARBON_DIOXIDE.get())
                 .build(), MekanismConfig.storage);
+        // 电离核心插槽对应的物品栏容器（否则中键复制后读取物品栏数据会崩溃）
+        ContainerType.ITEM.addDefaultCreators(eventBus, this, () -> ItemSlotsBuilder.builder()
+                .addBasic(1)
+                .build(), MekanismConfig.general);
     }
 }
