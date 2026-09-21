@@ -123,13 +123,20 @@ public class LargeLightningGeneratorBlockEntity extends TileEntityMekanism imple
         if (working) {
             int lightningCount = countLightning();
             if (lightningCount > 0) {
-                double powerMultiplier = MekltgtConfig.LARGE_GENERATOR_POWER_MULTIPLIER.get() / 1000.0;
-                double co2Multiplier = MekltgtConfig.LARGE_GENERATOR_CO2_MULTIPLIER.get() / 10.0;
                 double co2Ratio = (double) co2Tank.getFluidAmount() / getMaxFluid(); // 0.0 到 1.0
-                long production = (long) (lightningCount * PER_LIGHTNING * co2Ratio * powerMultiplier);
+                double co2Multiplier = MekltgtConfig.LARGE_GENERATOR_CO2_MULTIPLIER.get() / 10.0;
+                long production;
+                int consume;
+                if (MekltgtConfig.SINGLE_STRIKE_CACHE_MODE.get()) {
+                    // 单次充能缓存模式：充能全部缓存
+                    production = energyContainer.getMaxEnergy() - energyContainer.getEnergy();
+                    consume = (int) Math.max(1, production / PER_LIGHTNING * 1000 * co2Multiplier);
+                } else {
+                    double powerMultiplier = MekltgtConfig.LARGE_GENERATOR_POWER_MULTIPLIER.get() / 1000.0;
+                    production = (long) (lightningCount * PER_LIGHTNING * co2Ratio * powerMultiplier);
+                    consume = (int) Math.max(1, lightningCount * 1000 * co2Ratio * co2Multiplier);
+                }
                 if (production > 0) {
-                    // 消耗二氧化碳：每闪电按 CO2 比例消耗 1000mB，再乘消耗倍率
-                    int consume = (int) Math.max(1, lightningCount * 1000 * co2Ratio * co2Multiplier);
                     co2Tank.extract(consume, Action.EXECUTE, AutomationType.INTERNAL);
                     energyContainer.insert(production, Action.EXECUTE, AutomationType.INTERNAL);
                     producingEnergy = production;
